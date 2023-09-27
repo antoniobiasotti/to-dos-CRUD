@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, v4 } = require('uuid');
 
 const app = express();
 
@@ -30,14 +30,18 @@ app.post('/users', (request, response) => {
 
   const { name, username } = request.body;
 
-  users.push({
+  const user = { 
     id: uuidv4(),
-    name,
+    name, 
     username,
     todos: []
-  });
+  }
 
-  return response.send(users);
+  users.push(user);
+
+  // user AlreadyExists
+  
+  return response.status(201).json(user);
 
 });
 
@@ -50,7 +54,22 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+
+  const { title, deadline } = request.body;
+  const { username } = request.headers;
+
+  const todo = {
+    id: uuidv4(),
+    title,
+    done: false,
+    deadline,
+    created_at: new Date(),
+  }
+
+  username.todos.push(todo);  
+  
+  return response.status(201).send();
+
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -65,6 +84,6 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   // Complete aqui
 });
 
-app.listen(3333);
+// app.listen(3333);
 
 module.exports = app;
