@@ -36,11 +36,14 @@ app.post('/users', (request, response) => {
     username,
     todos: []
   }
+  
+  // User AlreadyExists
+  if(users.some((user) => user.username === username)) {
+    return response.status(400).json({ error: 'User already exists!' });
+  };
 
   users.push(user);
 
-  // user AlreadyExists
-  
   return response.status(201).json(user);
 
 });
