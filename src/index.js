@@ -26,6 +26,12 @@ function checksExistsUserAccount(request, response, next) {
   return next();
 }
 
+function checksExistsTodo(todo) {
+  if (!todo) {
+    return response.status(404).json({ error: "Todo not found" })
+  }
+}
+
 app.post('/users', (request, response) => {
 
   const { name, username } = request.body;
@@ -84,9 +90,7 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const todo = user.todos.find((todo) =>
     todo.id === id);
 
-  if (!todo) {
-    return response.status(404).json({ error: "Todo not found" })
-  }
+  checksExistsTodo(todo);
 
   todo.title = title;
   todo.deadline = new Date(deadline);
@@ -101,11 +105,13 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   const todo = user.todos.find((todo) =>
     todo.id === id);
+  
+  checksExistsTodo(todo);
 
   todo.done = true;
 
   return response.json(todo);
-  
+
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
